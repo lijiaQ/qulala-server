@@ -18,6 +18,7 @@ router.post('/login', async (req, res) => {
       res.status(200).json({
         code: 0,
         data: {
+          id: user.id,
           username: user.username,
           telephone: user.telephone,
           avatar: user.avatar,
@@ -60,6 +61,7 @@ router.post('/register', async (req, res) => {
     res.status(200).json({
       code: 0,
       data: {
+        id: user.id,
         username: newUser.username,
         telephone: newUser.telephone,
         avatar: newUser.avatar,
@@ -75,20 +77,48 @@ router.post('/register', async (req, res) => {
   }
 })
 
-router.post('/avatar', async (req, res) => {
+// 上传头像
+// 返回一个新头像的地址，所以需要再调用修改用户信息的接口完成修改头像
+router.post('/avatar', (req, res) => {
   const form = new formidable.IncomingForm()
   form.uploadDir = './public/avatar'
   form.keepExtensions = true
   form.parse(req)
-  form.on('file', (name, file) => {
+  form.on('file', async (name, file) => {
     fileSplit = file.path.split('\\')
     res.status(200).json({
       code: 0,
       data: {
-        avatar: 'http://localhost:2021/avatar/' + fileSplit[fileSplit.length - 1]
+        avatar:
+          'http://localhost:2021/avatar/' + fileSplit[fileSplit.length - 1]
       }
     })
   })
+})
+
+// 修改用户信息
+router.post('/user/update', async (req, res) => {
+  try {
+    /*
+    id: 用户id
+    info: 新信息 比如:
+      {
+        name: '灵儿',
+        password: 123
+      }
+    */
+    const { id, info } = req.body
+    const user = await userModel.updateOne(id, {...info})
+    res.status(200).json({
+      code: 0,
+      data: user
+    })
+  } catch {
+    res.status(500).json({
+      code: 1,
+      msg: '服务器错误'
+    })
+  }
 })
 
 // 车型
