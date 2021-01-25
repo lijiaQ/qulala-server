@@ -1,5 +1,6 @@
 const express = require('express')
 const axios = require('axios')
+const formidable = require('formidable')
 const Model = require('../utils/model')
 const userModel = new Model('./data/user.json')
 const carModel = new Model('./data/cars-info.json')
@@ -10,9 +11,9 @@ const router = express.Router()
 router.post('/login', async (req, res) => {
   try {
     const { username, telephone, password } = req.body
-    console.log(username, telephone, password);
+    console.log(username, telephone, password)
     const user = await userModel.findOne({ username, telephone, password })
-    console.log(user);
+    console.log(user)
     if (user) {
       res.status(200).json({
         code: 0,
@@ -72,6 +73,22 @@ router.post('/register', async (req, res) => {
       msg: '服务器错误'
     })
   }
+})
+
+router.post('/avatar', async (req, res) => {
+  const form = new formidable.IncomingForm()
+  form.uploadDir = './public/avatar'
+  form.keepExtensions = true
+  form.parse(req)
+  form.on('file', (name, file) => {
+    fileSplit = file.path.split('\\')
+    res.status(200).json({
+      code: 0,
+      data: {
+        avatar: 'http://localhost:2021/avatar/' + fileSplit[fileSplit.length - 1]
+      }
+    })
+  })
 })
 
 // 车型
