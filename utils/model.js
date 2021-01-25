@@ -29,12 +29,11 @@ module.exports = class Model {
           reject(err)
         } else {
           const result = JSON.parse(data)
+
           const index = result.findIndex(item => this.isSame(filter, item))
-          if (index !== -1) {
-            resolve(result[index])
-          } else {
-            resolve(null)
-          }
+          console.log(filter)
+
+          resolve(result[index])
         }
       })
     })
@@ -70,7 +69,7 @@ module.exports = class Model {
           const result = JSON.parse(data)
           const index = result.findIndex(item => this.isSame(filter, item))
           if (index === -1) {
-            reject('没有找到符合条件的学生')
+            resolve(null)
           } else {
             const temp = result.splice(index, 1)
             fs.writeFile(this.dataPath, JSON.stringify(result), err2 => {
@@ -95,7 +94,7 @@ module.exports = class Model {
           const result = JSON.parse(data)
           const index = result.findIndex(item => this.isSame(filter, item))
           if (index === -1) {
-            reject('没有找到符合条件的学生')
+            resolve(null)
           } else {
             const temp = Object.assign(result[index], obj)
             fs.writeFile(this.dataPath, JSON.stringify(result), err2 => {
@@ -113,7 +112,7 @@ module.exports = class Model {
   // 判断是否符合过滤规则
   isSame(obj1, obj2) {
     for (let key in obj1) {
-      if (obj2[key] && obj2[key] !== obj1[key]) {
+      if (obj2[key] && obj2[key] != obj1[key]) {
         return false
       }
     }

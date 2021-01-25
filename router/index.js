@@ -10,7 +10,9 @@ const router = express.Router()
 router.post('/login', async (req, res) => {
   try {
     const { username, telephone, password } = req.body
+    console.log(username, telephone, password);
     const user = await userModel.findOne({ username, telephone, password })
+    console.log(user);
     if (user) {
       res.status(200).json({
         code: 0,
