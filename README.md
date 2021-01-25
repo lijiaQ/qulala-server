@@ -1,1 +1,0 @@
-# qulala-server
